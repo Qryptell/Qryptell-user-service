@@ -1,0 +1,30 @@
+{
+  "name": "lunarloom-user-service",
+  "description": "The LunarLoom User Service is responsible for managing user data within the LunarLoom microservice chat application. It utilizes NodeJS, express, mongodb to securely handle our users in lunarloom chat app",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "directories": {
+    "source":"src",
+    "test": "test"
+  },
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0",
+    "nodemon": "^3.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev":"nodemon src/server.js",
+    "start":"node src/server.js",
+    "test": "node test/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/LoomingLunar/lunarloom-user-service"
+  },
+  "author": "LoomingLunar",
+  "license": "GPL-3.0"
+}
