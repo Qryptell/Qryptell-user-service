@@ -1,4 +1,4 @@
-import db from "../configurations/mongodb";
+import db from "../configurations/mongodb.js";
 import User from '../model/user.js'
 
 const userController = {
@@ -38,6 +38,18 @@ const userController = {
             try {
                 await db.get().collection(process.env.USERS_COLLECTION).updateOne({ userId }, {
                     $push:{blockedUsers:blockedUserId}
+                })
+                resolve()
+            } catch (e) {
+                reject(e)
+            }
+        })
+    },
+    unBlockUser: (userId, blockedUserId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.get().collection(process.env.USERS_COLLECTION).updateOne({ userId }, {
+                    $pull:{blockedUsers:blockedUserId}
                 })
                 resolve()
             } catch (e) {
