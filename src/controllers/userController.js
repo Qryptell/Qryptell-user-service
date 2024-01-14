@@ -1,7 +1,7 @@
 import db from "../configurations/mongodb";
 import User from '../model/user.js'
 
-module.exports = {
+const userController = {
     createUser: (userId) => {
         return new Promise(async (resolve, rejetct) => {
             let user = new User(userId)
@@ -23,14 +23,28 @@ module.exports = {
             }
         })
     },
-    deleteUser:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
-            try{
-                await db.get().collection(process.env.USERS_COLLECTION).deleteOne({userId})
+    deleteUser: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.get().collection(process.env.USERS_COLLECTION).deleteOne({ userId })
                 resolve(true)
-            }catch(e){
+            } catch (e) {
                 reject(e)
             }
         })
     },
+    blockUser: (userId, blockedUserId) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                await db.get().collection(process.env.USERS_COLLECTION).updateOne({ userId }, {
+                    $push:{blockedUsers:blockedUserId}
+                })
+                resolve()
+            } catch (e) {
+                reject(e)
+            }
+        })
+    }
 }
+
+export default userController
