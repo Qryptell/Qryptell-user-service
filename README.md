@@ -1,4 +1,4 @@
-# LunarLoom Auth Service
+# LunarLoom User Service
 
 The LunarLoom User Service is responsible for managing user data within the LunarLoom microservice chat application. It utilizes NodeJS, express, mongodb to securely handle our users in lunarloom chat app
 
