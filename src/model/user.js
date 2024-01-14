@@ -1,7 +1,8 @@
 export default class User{
-    constructor(userId,role = 'user') {
+    constructor(userId,username) {
         this.userId = userId
-        this.role = role
+        this.username = username
+        this.blockedUsers = []
         this.createdDate = Date.now()
     }
 }
