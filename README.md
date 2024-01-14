@@ -9,12 +9,6 @@ The LunarLoom User Service is responsible for managing user data within the Luna
 - [Contributing](#contributing)
 - [License](#license)
 
-## Features
-- User registration and account creation
-- User login and authentication using JWT (JSON Web Tokens)
-- Password hashing and secure storage
-- Authorization middleware for protected routes
-- Token-based session management and expiration
 
 ## Technologies Used
 - Node JS
