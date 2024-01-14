@@ -41,6 +41,15 @@ router.patch('/block-user', (req, res) => {
     })
 })
 
+router.patch('/unblock-user', (req, res) => {
+    const { userId, blockUserId } = req.body
+    userController.unBlockUser(userId,blockUserId).then(() => {
+        res.status(200).json({ success: true, message: 'Unblocked user Successfully' })
+    }).catch(() => {
+        res.status(422).json({ success: false, message: 'Something went wrong , please try again later' })
+    })
+})
+
 router.patch('/add-friend', (req, res) => {
     const { userId, friendId } = req.body
     friendsControllers.addFriend(userId, friendId).then(() => {
