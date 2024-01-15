@@ -49,7 +49,7 @@ Response:
 GET /user/:userId
 ```
 
-    Response
+Response:
 
 ```json
 {
