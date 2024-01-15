@@ -2,9 +2,9 @@ import { Router } from "express"
 import userController from './controllers/userController.js'
 import friendsControllers from "./controllers/friendsController.js"
 
-const router = Router()
+const userRouter = Router()
 
-router.post('/:key/create-user', (req, res) => {
+userRouter.post('/:key/create', (req, res) => {
     const { userId, username } = req.body
     userController.createUser(userId, username).then(() => {
         res.status(200).json({ success: true, message: 'user created Successfully' })
@@ -13,7 +13,7 @@ router.post('/:key/create-user', (req, res) => {
     })
 })
 
-router.get('/user/:userId', async (req, res) => {
+userRouter.get('/:userId', async (req, res) => {
     const { userId } = req.params
     try {
         const user = await userController.getUser(userId)
@@ -23,7 +23,7 @@ router.get('/user/:userId', async (req, res) => {
     }
 })
 
-router.delete('/:key/user/:userId', (req, res) => {
+userRouter.delete('/:key/:userId', (req, res) => {
     const { userId } = req.body
     userController.deleteUser(userId).then(() => {
         res.status(200).json({ success: true, message: 'User deleted Successfully' })
@@ -32,7 +32,7 @@ router.delete('/:key/user/:userId', (req, res) => {
     })
 })
 
-router.patch('/block-user', (req, res) => {
+userRouter.patch('/block', (req, res) => {
     const { userId, blockedUserId } = req.body
     userController.blockUser(userId, blockedUserId).then(() => {
         res.status(200).json({ success: true, message: 'Blcked User Successfully' })
@@ -41,16 +41,17 @@ router.patch('/block-user', (req, res) => {
     })
 })
 
-router.patch('/unblock-user', (req, res) => {
+userRouter.patch('/unblock', (req, res) => {
     const { userId, blockUserId } = req.body
-    userController.unBlockUser(userId,blockUserId).then(() => {
+    userController.unBlockUser(userId, blockUserId).then(() => {
         res.status(200).json({ success: true, message: 'Unblocked user Successfully' })
     }).catch(() => {
         res.status(422).json({ success: false, message: 'Something went wrong , please try again later' })
     })
 })
 
-router.patch('/add-friend', (req, res) => {
+const friendRouter = Router()
+friendRouter.patch('/add', (req, res) => {
     const { userId, friendId } = req.body
     friendsControllers.addFriend(userId, friendId).then(() => {
         res.status(200).json({ success: true, message: 'Friend added successfully' })
@@ -59,14 +60,14 @@ router.patch('/add-friend', (req, res) => {
     })
 })
 
-router.get('/friends/:userId', (req, res) => {
+friendRouter.get('/:userId', (req, res) => {
     const { userId } = req.params
     friendsControllers.getFriends(userId).then((friends) => {
         res.status(200).json({ success: true, friends })
     }).catch(() => { })
 })
 
-router.patch('/remove-friend', (req, res) => {
+friendRouter.patch('/remove', (req, res) => {
     const { userId, friendId } = req.body
     friendsControllers.removeFriend(userId, friendId).then(() => {
         res.status(200).json({ success: true, message: 'Friend removed Successfully' })
@@ -75,4 +76,4 @@ router.patch('/remove-friend', (req, res) => {
     })
 })
 
-export default router
+export default { userRouter, friendRouter }
