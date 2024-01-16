@@ -76,4 +76,4 @@ friendRouter.patch('/remove', (req, res) => {
     })
 })
 
-export default { userRouter, friendRouter }
+export { userRouter, friendRouter }
