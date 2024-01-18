@@ -5,36 +5,53 @@ import friendsControllers from "./controllers/friendsController.js"
 const userRouter = Router()
 
 userRouter.post('/:key/create', (req, res) => {
-    const { userId, username } = req.body
-    userController.createUser(userId, username).then(() => {
-        res.status(200).json({ success: true, message: 'user created Successfully' })
-    }).catch(() => {
-        res.status(500).json({ success: false, message: 'something went wrong , please try again later' })
-    })
+    const { key } = req.params
+    if (key == process.env.PRIVATE_SECRET) {
+        const { userId, username } = req.body
+        userController.createUser(userId, username).then(() => {
+            res.status(200).json({ success: true, message: 'User created Successfully' })
+        }).catch(() => {
+            res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
+        })
+    } else {
+        res.status(403).json({ success: false, message: "Acces Denied" })
+    }
+
 })
 
-userRouter.get('/:userId', async (req, res) => {
-    const { userId } = req.params
+userRouter.get('/:username', async (req, res) => {
+    const { username } = req.params
     try {
-        const user = await userController.getUser(userId)
-        res.status(200).json({ success: true, user })
+        const user = await userController.getUser(username)
+        if (user) {
+            res.status(200).json({ success: true, user })
+        } else {
+            res.status(404).json({ success: false, message: "User not found" })
+        }
     } catch (e) {
         res.status(500).json({ success: false, message: 'something went wrong , please try again later' })
     }
 })
 
 userRouter.delete('/:key/:userId', (req, res) => {
-    const { userId } = req.body
-    userController.deleteUser(userId).then(() => {
-        res.status(200).json({ success: true, message: 'User deleted Successfully' })
-    }).catch(() => {
-        res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
-    })
+    const { key, userId } = req.body
+    if (key == process.env.PRIVATE_SECRET) {
+        userController.deleteUser(userId).then(() => {
+            res.status(200).json({ success: true, message: 'User deleted Successfully' })
+        }).catch(() => {
+            res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
+        })
+    } else {
+        res.status(403).json({ success: false, message: "Acces Denied" })
+    }
 })
 
 userRouter.patch('/block', (req, res) => {
-    const { userId, blockedUserId } = req.body
-    userController.blockUser(userId, blockedUserId).then(() => {
+    const { userId, blockUserId } = req.body
+    if (!(userId && blockUserId)) {
+        return res.status(422).json({ success: false, message: "UserId or BlockUserId is missing" })
+    }
+    userController.blockUser(userId, blockUserId).then(() => {
         res.status(200).json({ success: true, message: 'Blcked User Successfully' })
     }).catch((e) => {
         res.status(422).json({ success: false, message: e.message })
@@ -43,6 +60,9 @@ userRouter.patch('/block', (req, res) => {
 
 userRouter.patch('/unblock', (req, res) => {
     const { userId, blockUserId } = req.body
+    if (!(userId && blockUserId)) {
+        return res.status(422).json({ success: false, message: "UserId or BlockUserId is missing" })
+    }
     userController.unBlockUser(userId, blockUserId).then(() => {
         res.status(200).json({ success: true, message: 'Unblocked user Successfully' })
     }).catch(() => {
@@ -51,6 +71,7 @@ userRouter.patch('/unblock', (req, res) => {
 })
 
 const friendRouter = Router()
+
 friendRouter.patch('/add', (req, res) => {
     const { userId, friendId } = req.body
     friendsControllers.addFriend(userId, friendId).then(() => {
