@@ -1,6 +1,5 @@
 export default class User{
-    constructor(userId,username) {
-        this.userId = userId
+    constructor(username){
         this.username = username
         this.blockedUsers = []
         this.createdDate = Date.now()
