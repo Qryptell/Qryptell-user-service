@@ -3,16 +3,13 @@ import User from '../model/user.js'
 import collection from '../configurations/collections.js'
 
 const userController = {
-    createUser: (userId, username) => {
+    createUser: (username) => {
         return new Promise(async (resolve, reject) => {
             const userWithUsername = await db.get().collection(collection.USERS).findOne({ username })
-            const userWithUserId = await db.get().collection(collection.USERS).findOne({ userId })
             if (userWithUsername) {
                 reject(new Error("Username aready Taken"))
-            } else if (userWithUserId) {
-                reject(new Error("Internal Server error"))
             } else {
-                let user = new User(userId, username)
+                let user = new User(username)
                 try {
                     const res = await db.get().collection(collection.USERS).insertOne(user)
                     resolve(res.insertedId)
@@ -32,21 +29,21 @@ const userController = {
             }
         })
     },
-    deleteUser: (userId) => {
+    deleteUser: (username) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).deleteOne({ userId })
+                await db.get().collection(collection.USERS).deleteOne({ username })
                 resolve(true)
             } catch (e) {
                 reject(e)
             }
         })
     },
-    blockUser: (userId, blockUserId) => {
+    blockUser: (username, blockUsername) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).updateOne({ userId }, {
-                    $push: { blockedUsers: blockUserId }
+                await db.get().collection(collection.USERS).updateOne({ username }, {
+                    $push: { blockedUsers: blockUsername }
                 })
                 resolve()
             } catch (e) {
@@ -54,11 +51,11 @@ const userController = {
             }
         })
     },
-    unBlockUser: (userId, blockUserId) => {
+    unBlockUser: (username, blockUsername) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).updateOne({ userId }, {
-                    $pull: { blockedUsers: blockUserId }
+                await db.get().collection(collection.USERS).updateOne({ username }, {
+                    $pull: { blockedUsers: blockUsername }
                 })
                 resolve()
             } catch (e) {
