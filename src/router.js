@@ -5,12 +5,12 @@ import friendsControllers from "./controllers/friendsController.js"
 const userRouter = Router()
 
 userRouter.post('/private/create', (req, res) => {
-        const { username } = req.body
-        userController.createUser( username).then(() => {
-            res.status(200).json({ success: true, message: 'User created Successfully' })
-        }).catch(() => {
-            res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
-        })
+    const { username } = req.body
+    userController.createUser(username).then(() => {
+        res.status(200).json({ success: true, message: 'User created Successfully' })
+    }).catch(() => {
+        res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
+    })
 
 })
 
@@ -30,12 +30,12 @@ userRouter.get('/:username', async (req, res) => {
 
 userRouter.delete('/private/:username', (req, res) => {
     const { userId } = req.body
-        userController.deleteUser(userId).then(() => {
-            res.status(200).json({ success: true, message: 'User deleted Successfully' })
-        }).catch(() => {
-            res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
-        })
-    
+    userController.deleteUser(userId).then(() => {
+        res.status(200).json({ success: true, message: 'User deleted Successfully' })
+    }).catch(() => {
+        res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
+    })
+
 })
 
 userRouter.patch('/block', (req, res) => {
@@ -65,21 +65,30 @@ userRouter.patch('/unblock', (req, res) => {
 
 const friendRouter = Router()
 
-friendRouter.post('/requiest',(req,res)=>{
-        const {username,friendname} = req.body
-	friendsControllers.addFriend(username,friendname).then(()=>{
-		res.status(200).json({success:true,message:'Requiested'})
-	}).catch((e)=>{
-		res.status(500).json({success:false,message:e.message})
-	})
-})
-
-friendRouter.patch('/add', (req, res) => {
+friendRouter.post('/requiest', (req, res) => {
     const { username, friendname } = req.body
     friendsControllers.addFriend(username, friendname).then(() => {
-        res.status(200).json({ success: true, message: 'Friend added successfully' })
+        res.status(200).json({ success: true, message: 'Requiested' })
+    }).catch((e) => {
+        res.status(500).json({ success: false, message: e.message })
+    })
+})
+
+friendRouter.patch('/accept', (req, res) => {
+    const { username, friendname } = req.body
+    friendsControllers.acceptReq(username, friendname).then(() => {
+        res.status(200).json({ success: true, message: 'Requiest Accepted successfully' })
     }).catch((e) => {
         res.status(422).json({ success: false, message: e.message })
+    })
+})
+
+friendRouter.get('/reqs/:username', (req, res) => {
+    const { username } = req.params
+    friendsControllers.getFriendReqs(username).then((reqs) => {
+        res.status(200).json({ success: true, reqs })
+    }).catch(() => {
+        res.status(500).json({ success: false, message: "Somthing Went Wrong!" })
     })
 })
 
@@ -87,7 +96,9 @@ friendRouter.get('/:username', (req, res) => {
     const { username } = req.params
     friendsControllers.getFriends(username).then((friends) => {
         res.status(200).json({ success: true, friends })
-    }).catch(() => { })
+    }).catch(() => {
+        res.status(500).json({ success: false, message: "Somthing Went Wrong!" })
+    })
 })
 
 friendRouter.patch('/remove', (req, res) => {
