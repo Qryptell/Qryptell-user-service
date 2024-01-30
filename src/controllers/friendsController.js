@@ -5,42 +5,58 @@ const friendsControllers = {
     requiestToFriend: (username, friendname) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const friendDoc = await db.get().collectioction(collection.FRIENDS).findOne({ username: friendname })
-                if (!(friend == undefined && friend == null)) {
-                    db.get().collection(collection.FRIENDS).updateOne({ username: friendname }, {
-                        $push: { 'reqs': username }
-                    })
+                const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ username: friendname })
+                if (!(friendDoc == undefined && friendDoc == null)) {
+                    if (friendDoc.reqs?.includes(username)) {
+                        reject(new Error("Allready requiested,waiting for response"))
+                    } else {
+                        db.get().collection(collection.FRIENDS).updateOne({ username: friendname }, {
+                            $push: { 'reqs': username }
+                        })
+                        resolve()
+                    }
                 } else {
                     db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [], reqs: [username] })
+                    resolve()
                 }
             } catch (e) {
-                reject(e)
+                reject(new Error("Something Went Wrong!"))
             }
         })
     },
     acceptReq: (username, friendname) => {
         return new Promise(async (resolve, reject) => {
-            try {
                 const friend = await db.get().collection(collection.FRIENDS).findOne({ username })
                 if (!(friend == undefined && friend == null)) {
-                    if (!(friend?.freinds?.includes(friendname))) {
+                    if (!(friend?.reqs?.includes(friendname))) {
                         reject(new Error("No friend requiest wih this id"))
                     } else {
                         await db.get().collection(collection.FRIENDS).updateOne({ username }, {
-                            $pop: { reqs: friendname }, $push: { friends: friendname }
+                            $pull: { reqs: friendname }, $push: { friends: friendname }
                         })
-                        await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
-                            $push: { friends: username }
-                        })
+                        const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendname })
+                        if (friendDoc) {
+                            await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
+                                $push: { friends: username }
+                            })
+                        } else {
+                            await db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [username], reqs: [] })
+                        }
                         resolve()
                     }
                 } else {
                     await db.get().collection(collection.FRIENDS).insertOne({ username, freinds: [friendname], reqs: [] })
+                    const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendname })
+                    if (friendDoc) {
+                        await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
+                            $push: { friends: username }
+                        })
+                    } else {
+                        await db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [username], reqs: [] })
+                    }
                     resolve()
                 }
-            } catch (e) {
-                reject(e)
-            }
+            
         })
     },
     getFriendReqs: (username) => {
@@ -74,12 +90,12 @@ const friendsControllers = {
             try {
                 const user = await db.get().collection(collection.FRIENDS).findOne({ username })
                 if (user) {
-                    resolve(user.freinds)
+                    resolve(user.friends)
                 } else {
-                    resolve([])
+                    reject(new Error("User not found"))
                 }
             } catch (e) {
-                reject(e)
+                reject(new Error("Something Went Wrong!"))
             }
         })
     }
