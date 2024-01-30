@@ -65,10 +65,10 @@ userRouter.patch('/unblock', (req, res) => {
 
 const friendRouter = Router()
 
-friendRouter.post('/requiest', (req, res) => {
+friendRouter.patch('/requiest', (req, res) => {
     const { username, friendname } = req.body
-    friendsControllers.addFriend(username, friendname).then(() => {
-        res.status(200).json({ success: true, message: 'Requiested' })
+    friendsControllers.requiestToFriend(username, friendname).then(() => {
+        res.status(200).json({ success: true, message: 'Requiest,waiting for response' })
     }).catch((e) => {
         res.status(500).json({ success: false, message: e.message })
     })

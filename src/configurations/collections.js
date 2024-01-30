@@ -1,5 +1,5 @@
-const constants = {
+const collection = {
     USERS: "users",
     FRIENDS: "friends"
 }
-export default constants
+export default collection
