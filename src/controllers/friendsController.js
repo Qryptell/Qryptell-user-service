@@ -56,7 +56,6 @@ const friendsControllers = {
                     }
                     resolve()
                 }
-            
         })
     },
     getFriendReqs: (username) => {
@@ -74,10 +73,13 @@ const friendsControllers = {
         })
     },
     removeFriend: (username, friendname) => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
-                db.get().collection(collection.FRIENDS).updateOne({ username }, {
+                await db.get().collection(collection.FRIENDS).updateOne({ username }, {
                     $pull: { freinds: friendname }
+                })
+                await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
+                    $pull: { freinds: username }
                 })
                 resolve()
             } catch (e) {
