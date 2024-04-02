@@ -19,31 +19,31 @@ const userController = {
             }
         })
     },
-    getUser: (username) => {
+    getUser: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await db.get().collection(collection.USERS).findOne({ username })
+                const user = await db.get().collection(collection.USERS).findOne({ userId })
                 resolve(user)
             } catch (e) {
                 reject(e)
             }
         })
     },
-    deleteUser: (username) => {
+    deleteUser: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).deleteOne({ username })
+                await db.get().collection(collection.USERS).deleteOne({ userId })
                 resolve(true)
             } catch (e) {
                 reject(e)
             }
         })
     },
-    blockUser: (username, blockUsername) => {
+    blockUser: (userId, blockUserId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).updateOne({ username }, {
-                    $push: { blockedUsers: blockUsername }
+                await db.get().collection(collection.USERS).updateOne({ userId }, {
+                    $push: { blockedUsers: blockUserId }
                 })
                 resolve()
             } catch (e) {
@@ -51,11 +51,11 @@ const userController = {
             }
         })
     },
-    unBlockUser: (username, blockUsername) => {
+    unBlockUser: (userId, blockUserId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.USERS).updateOne({ username }, {
-                    $pull: { blockedUsers: blockUsername }
+                await db.get().collection(collection.USERS).updateOne({ userId }, {
+                    $pull: { blockedUsers: blockUserId }
                 })
                 resolve()
             } catch (e) {

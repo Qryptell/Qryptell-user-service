@@ -2,25 +2,25 @@ import db from '../configurations/mongodb.js'
 import collection from '../configurations/collections.js'
 
 const friendsControllers = {
-    requiestToFriend: (username, friendname) => {
+    requiestToFriend: (userId, friendId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ username: friendname })
+                const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ userId: friendId })
                 if (!(friendDoc == undefined && friendDoc == null)) {
-                    if (friendDoc.freinds?.includes(friendname)) {
+                    if (friendDoc.freinds?.includes(friendId)) {
                         reject(new Error("User allready in friend list"))
                     } else {
-                        if (friendDoc.reqs?.includes(username)) {
+                        if (friendDoc.reqs?.includes(userId)) {
                             reject(new Error("Allready requiested,waiting for response"))
                         } else {
-                            await db.get().collection(collection.FRIENDS).updateOne({ username: friendname }, {
-                                $push: { 'reqs': username }
+                            await db.get().collection(collection.FRIENDS).updateOne({ userId: friendId }, {
+                                $push: { 'reqs': userId }
                             })
                             resolve()
                         }
                     }
                 } else {
-                    await db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [], reqs: [username] })
+                    await db.get().collection(collection.FRIENDS).insertOne({ userId: friendId, friends: [], reqs: [userId] })
                     resolve()
                 }
             } catch (e) {
@@ -28,48 +28,48 @@ const friendsControllers = {
             }
         })
     },
-    acceptReq: (username, friendname) => {
+    acceptReq: (userId, friendId) => {
         return new Promise(async (resolve, reject) => {
-            const friend = await db.get().collection(collection.FRIENDS).findOne({ username })
+            const friend = await db.get().collection(collection.FRIENDS).findOne({ userId })
             if (!(friend == undefined && friend == null)) {
-                if (!(friend?.reqs?.includes(friendname))) {
+                if (!(friend?.reqs?.includes(friendId))) {
                     reject(new Error("No friend requiest wih this id"))
                 } else {
-                    await db.get().collection(collection.FRIENDS).updateOne({ username }, {
-                        $pull: { reqs: friendname }, $push: { friends: friendname }
+                    await db.get().collection(collection.FRIENDS).updateOne({ userId }, {
+                        $pull: { reqs: friendId }, $push: { friends: friendId }
                     })
-                    const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendname })
+                    const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendId })
                     if (friendDoc) {
-                        await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
-                            $push: { friends: username }
+                        await db.get().collection(collection.FRIENDS).updateOne({ friendId }, {
+                            $push: { friends: userId }
                         })
                     } else {
-                        await db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [username], reqs: [] })
+                        await db.get().collection(collection.FRIENDS).insertOne({ userId: friendId, friends: [userId], reqs: [] })
                     }
                     resolve()
                 }
             } else {
-                await db.get().collection(collection.FRIENDS).insertOne({ username, freinds: [friendname], reqs: [] })
-                const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendname })
+                await db.get().collection(collection.FRIENDS).insertOne({ userId, freinds: [friendId], reqs: [] })
+                const friendDoc = await db.get().collection(collection.FRIENDS).findOne({ friendId })
                 if (friendDoc) {
-                    await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
-                        $push: { friends: username }
+                    await db.get().collection(collection.FRIENDS).updateOne({ friendId }, {
+                        $push: { friends: userId }
                     })
                 } else {
-                    await db.get().collection(collection.FRIENDS).insertOne({ username: friendname, friends: [username], reqs: [] })
+                    await db.get().collection(collection.FRIENDS).insertOne({ userId: friendId, friends: [userId], reqs: [] })
                 }
                 resolve()
             }
 
         })
     },
-    denieReq: (username, friendname) => {
+    denieReq: (userId, friendId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await db.get().collection(collection.FRIENDS).findOne({ username })
-                if (user && user?.reqs?.includes(friendname)) {
-                    await db.get().collection(collection.FRIENDS).updateOne({ username }, {
-                        $pull: { reqs: friendname }
+                const user = await db.get().collection(collection.FRIENDS).findOne({ userId })
+                if (user && user?.reqs?.includes(friendId)) {
+                    await db.get().collection(collection.FRIENDS).updateOne({ userId }, {
+                        $pull: { reqs: friendId }
                     })
                 } else {
                     reject(new Error("No friend requiest wih this id"))
@@ -79,10 +79,10 @@ const friendsControllers = {
             }
         })
     },
-    getFriendReqs: (username) => {
+    getFriendReqs: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await db.get().collection(collection.FRIENDS).findOne({ username })
+                const user = await db.get().collection(collection.FRIENDS).findOne({ userId })
                 if (user) {
                     resolve(user.reqs)
                 } else {
@@ -93,14 +93,14 @@ const friendsControllers = {
             }
         })
     },
-    removeFriend: (username, friendname) => {
+    removeFriend: (userId, friendId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                await db.get().collection(collection.FRIENDS).updateOne({ username }, {
-                    $pull: { freinds: friendname }
+                await db.get().collection(collection.FRIENDS).updateOne({ userId }, {
+                    $pull: { freinds: friendId }
                 })
-                await db.get().collection(collection.FRIENDS).updateOne({ friendname }, {
-                    $pull: { freinds: username }
+                await db.get().collection(collection.FRIENDS).updateOne({ friendId }, {
+                    $pull: { freinds: userId }
                 })
                 resolve()
             } catch (e) {
@@ -108,10 +108,10 @@ const friendsControllers = {
             }
         })
     },
-    getFriends: (username) => {
+    getFriends: (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await db.get().collection(collection.FRIENDS).findOne({ username })
+                const user = await db.get().collection(collection.FRIENDS).findOne({ userId })
                 if (user) {
                     resolve(user.friends)
                 } else {
