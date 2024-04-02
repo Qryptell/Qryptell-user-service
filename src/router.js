@@ -54,7 +54,8 @@ userRouter.delete('/private/:userId', (req, res) => {
 })
 
 userRouter.patch('/block',checkLogin, (req, res) => {
-    const { userId, blockUserId } = req.body
+    const userId = req.userId
+    const { blockUserId } = req.body
     if (!(userId && blockUserId)) {
         return res.status(422).json({ success: false, message: "UserId or BlockUserId is missing" })
     }
@@ -66,7 +67,8 @@ userRouter.patch('/block',checkLogin, (req, res) => {
 })
 
 userRouter.patch('/unblock', checkLogin,(req, res) => {
-    const { userId, blockUserId } = req.body
+    const userId = req.userId
+    const { blockUserId } = req.body
     if (!(userId && blockUserId)) {
         return res.status(422).json({ success: false, message: "UserId or BlockUserId is missing" })
     }
@@ -81,7 +83,8 @@ userRouter.patch('/unblock', checkLogin,(req, res) => {
 const friendRouter = Router()
 
 friendRouter.patch('/request', checkLogin,(req, res) => {
-    const { userId, friendId } = req.body
+    const userId = req.userId
+    const { friendId } = req.body
     friendsControllers.requiestToFriend(userId, friendId).then(() => {
         res.status(200).json({ success: true, message: 'Requiest,waiting for response' })
     }).catch((e) => {
@@ -90,7 +93,8 @@ friendRouter.patch('/request', checkLogin,(req, res) => {
 })
 
 friendRouter.patch('/accept', checkLogin,(req, res) => {
-    const { userId, friendId } = req.body
+    const userId = req.userId
+    const { friendId } = req.body
     friendsControllers.acceptReq(userId, friendId).then(() => {
         res.status(200).json({ success: true, message: 'Requiest Accepted successfully' })
     }).catch((e) => {
@@ -98,8 +102,8 @@ friendRouter.patch('/accept', checkLogin,(req, res) => {
     })
 })
 
-friendRouter.get('/reqs/:userId', checkLogin, (req, res) => {
-    const { userId } = req.params
+friendRouter.get('/reqs/', checkLogin, (req, res) => {
+    const userId = req.userId
     friendsControllers.getFriendReqs(userId).then((reqs) => {
         res.status(200).json({ success: true, reqs })
     }).catch(() => {
@@ -107,8 +111,8 @@ friendRouter.get('/reqs/:userId', checkLogin, (req, res) => {
     })
 })
 
-friendRouter.get('/:userId', checkLogin, (req, res) => {
-    const { userId } = req.params
+friendRouter.get('/', checkLogin, (req, res) => {
+    const userId = req.userId
     friendsControllers.getFriends(userId).then((friends) => {
         res.status(200).json({ success: true, friends })
         return
@@ -118,7 +122,8 @@ friendRouter.get('/:userId', checkLogin, (req, res) => {
 })
 
 friendRouter.patch('/remove', checkLogin,(req, res) => {
-    const { userId, friendId } = req.body
+    const userId = req.userId
+    const { friendId } = req.body
     friendsControllers.removeFriend(userId, friendId).then(() => {
         res.status(200).json({ success: true, message: 'Friend removed Successfully' })
     }).catch((e) => {
