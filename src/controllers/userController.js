@@ -3,13 +3,13 @@ import User from '../model/user.js'
 import collection from '../configurations/collections.js'
 
 const userController = {
-    createUser: (username,name) => {
+    createUser: (username,name,userId) => {
         return new Promise(async (resolve, reject) => {
             const userWithUsername = await db.get().collection(collection.USERS).findOne({ username })
             if (userWithUsername) {
                 reject(new Error("Username aready Taken"))
             } else {
-                let user = new User(username,name)
+                let user = new User(username,name,userId)
                 try {
                     const res = await db.get().collection(collection.USERS).insertOne(user)
                     resolve(res.insertedId)

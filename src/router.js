@@ -5,8 +5,8 @@ import friendsControllers from "./controllers/friendsController.js"
 const userRouter = Router()
 
 userRouter.post('/private/create', (req, res) => {
-    const { username,name } = req.body
-    userController.createUser(username,name).then(() => {
+    const { username,name,userId } = req.body
+    userController.createUser(username,name,userId).then(() => {
         res.status(200).json({ success: true, message: 'User created Successfully' })
     }).catch(() => {
         res.status(500).json({ success: false, message: 'Something went wrong , please try again later' })
