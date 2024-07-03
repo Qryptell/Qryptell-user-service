@@ -18,5 +18,16 @@ app.use(cors({ origin: [process.env.CLIENT_URL], credentials: true }))
 app.use('/user', userRouter)
 app.use('/friend', friendRouter)
 
-db.connect((err) => err ? console.log(err) : console.log("Database Connected : MongoDB"))
-app.listen(process.env.PORT, (err) => err ? console.log(err) : console.log('Server start on port : ' + process.env.PORT))
+db.connect(err =>  {
+    if (err)  {
+        throw err
+    }
+    console.log("Database Connected : MongoDB")
+})
+
+app.listen(process.env.PORT, (err) => {
+    if (err) {
+        throw err
+    }
+    console.log('Server start on port : ' + process.env.PORT)
+})
